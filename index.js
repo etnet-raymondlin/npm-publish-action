@@ -68,6 +68,8 @@ async function processDirectory(dir, config, commits) {
   checkCommit(config, commits, version);
 
   await createTag(dir, config, version);
+  await installPackage(dir, config, version);
+  await buildPackage(dir, config, version);
   await publishPackage(dir, config, version);
 
   console.log("Done.");
@@ -127,14 +129,46 @@ async function createTag(dir, config, version) {
   console.log("Tag has been created successfully:", tagName);
 }
 
+async function installPackage(dir, config, version) {
+  const installCommand = getEnv("INSTALL_COMMAND") || null;
+
+  if (installCommand) {
+    await run(
+      dir,
+      ...installCommand
+        .split(" ")
+    );
+    console.log("packages has been install successfully:", version);
+  } else {
+    console.log("skip install");
+  }
+
+}
+
+async function buildPackage(dir, config, version) {
+  const buildCommand = getEnv("BUILD_COMMAND") || null;
+
+  if (buildCommand) {
+    await run(
+      dir,
+      ...buildCommand
+        .split(" ")
+    );
+    console.log("Version has been built successfully:", version);
+  } else {
+    console.log("skip build");
+  }
+
+}
+
 async function publishPackage(dir, config, version) {
+  const publishCommand = getEnv("PUBLISH_COMMAND") || "yarn publish --non-interactive --new-version %VERSION%";
+
   await run(
     dir,
-    "yarn",
-    "publish",
-    "--non-interactive",
-    "--new-version",
-    version
+    ...publishCommand
+      .replace(/%VERSION%/g, version)
+      .split(" ")
   );
 
   console.log("Version has been published successfully:", version);
@@ -176,7 +210,7 @@ class ExitError extends Error {
   }
 }
 
-class NeutralExitError extends Error {}
+class NeutralExitError extends Error { }
 
 if (require.main === module) {
   main().catch(e => {

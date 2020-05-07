@@ -73,10 +73,11 @@ async function processDirectory(dir, config, commits) {
 
   checkCommit(config, commits, version);
 
-  await createTag(dir, config, version);
   await installPackage(dir, config, version);
   await buildPackage(dir, config, version);
   await publishPackage(dir, config, version);
+
+  await createTag(dir, config, version);
 
   console.log("Done.");
 }

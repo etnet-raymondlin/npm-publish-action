@@ -18,7 +18,6 @@ async function main() {
     console.log(
       `Ref ${eventObj.ref} is not the default branch: ${defaultBranch}`
     );
-    throw new NeutralExitError();
   }
 
   const commitPattern =

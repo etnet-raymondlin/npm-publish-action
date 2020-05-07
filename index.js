@@ -14,6 +14,8 @@ async function main() {
 
   const defaultBranch = getEnv("DEFAULT_BRANCH") || "master";
 
+  console.log(`This PR is ${eventObj.ref}`);
+
   if (eventObj.ref !== `refs/heads/${defaultBranch}`) {
     console.log(
       `Ref ${eventObj.ref} is not the default branch: ${defaultBranch}`
@@ -52,6 +54,9 @@ function placeholderEnv(name, defaultValue) {
 
 async function processDirectory(dir, config, commits) {
   const packageFile = join(dir, "package.json");
+
+  console.log(`Read ${packageFile}`);
+
   const packageObj = await readJson(packageFile).catch(() =>
     Promise.reject(
       new NeutralExitError(`package file not found: ${packageFile}`)
@@ -63,6 +68,8 @@ async function processDirectory(dir, config, commits) {
   }
 
   const { version } = packageObj;
+
+  console.log(`version in pacakge.json is ${version}`);
 
   checkCommit(config, commits, version);
 
@@ -137,7 +144,7 @@ async function installPackage(dir, config, version) {
       ...installCommand
         .split(" ")
     );
-    console.log("packages has been install successfully:", version);
+    console.log("packages has been install successfully");
   } else {
     console.log("skip install");
   }
